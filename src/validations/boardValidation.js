@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import Joi from "joi";
+import ApiError from "~/utils/ApiError";
 
 const createNew = async (req, res, next) => {
   const correctCondition = Joi.object({
@@ -12,9 +13,11 @@ const createNew = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res
-      .status(StatusCodes.UNPROCESSABLE_ENTITY)
-      .json({ message: new Error(error).message });
+    const customError = new ApiError(
+      StatusCodes.BAD_REQUEST,
+      new Error(error).message
+    );
+    next(customError);
   }
 };
 

@@ -5,6 +5,7 @@ import { connectToDatabase, disconnectDatabase } from "./config/mongodb";
 import exitHook from "async-exit-hook";
 import { env } from "./config/environment";
 import { APIs } from "./routes/v1";
+import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware";
 
 const START_SERVER = () => {
   const app = express();
@@ -13,7 +14,10 @@ const START_SERVER = () => {
 
   app.use(express.json());
 
-  app.use('/v1', APIs)
+  app.use("/v1", APIs);
+
+  //Middleware to handle errors
+  app.use(errorHandlingMiddleware);
 
   const port = env.PORT;
 
