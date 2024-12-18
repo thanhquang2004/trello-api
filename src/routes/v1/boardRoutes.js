@@ -10,4 +10,12 @@ Router.route("/")
   })
   .post(boardValidation.createNew, boardController.createNew);
 
+Router.route("/:id")
+  .get(boardController.getDetail)
+  .put((req, res) => {
+    res.send("PUT /board/:id");
+  })
+  .delete((req, res) => {
+    res.send("DELETE /board/:id");
+  });
 export const boardRoutes = Router;
