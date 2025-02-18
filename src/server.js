@@ -25,10 +25,17 @@ const START_SERVER = () => {
 
   const port = env.PORT;
 
-  app.listen(port, hostname, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Server is running on http://${hostname}:${port}/`);
-  });
+  if (env.BUILD_MODE === "production") {
+    app.listen(process.env.PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Server is running`);
+    });
+  } else {
+    app.listen(port, hostname, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Server is running on http://${hostname}:${port}/`);
+    });
+  }
 
   exitHook(() => {
     console.log("Server is stopping...");
