@@ -2,15 +2,14 @@ import { StatusCodes } from "http-status-codes";
 import Joi from "joi";
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/models/validators";
 import ApiError from "~/utils/ApiError";
-import { BOARD_TYPES } from "~/utils/constants";
 
 const createNew = async (req, res, next) => {
   const correctCondition = Joi.object({
+    boardId: Joi.string()
+      .required()
+      .pattern(OBJECT_ID_RULE)
+      .message(OBJECT_ID_RULE_MESSAGE),
     title: Joi.string().required().min(3).max(30).trim().strict(),
-    description: Joi.string().max(30).trim().strict(),
-    type: Joi.string()
-      .valid(BOARD_TYPES.PRIVATE, BOARD_TYPES.PUBLIC)
-      .required(),
   });
 
   try {
@@ -28,10 +27,11 @@ const createNew = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const correctCondition = Joi.object({
-    title: Joi.string().min(3).max(30).trim().strict(),
-    description: Joi.string().max(30).trim().strict(),
-    type: Joi.string().valid(BOARD_TYPES.PRIVATE, BOARD_TYPES.PUBLIC),
-    columnOrderIds: Joi.array().items(
+    // boardId: Joi.string()
+    //   .required()
+    //   .pattern(OBJECT_ID_RULE)
+    //   .message(OBJECT_ID_RULE_MESSAGE),
+    cardOrderIds: Joi.array().items(
       Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
     ),
   });
@@ -52,37 +52,16 @@ const update = async (req, res, next) => {
   }
 };
 
-const moveCardToDifferentColumn = async (req, res, next) => {
+const deleteColumn = async (req, res, next) => {
   const correctCondition = Joi.object({
-    currentCardId: Joi.string()
-      .pattern(OBJECT_ID_RULE)
-      .message(OBJECT_ID_RULE_MESSAGE)
-      .required(),
-    prevColumnId: Joi.string()
-      .pattern(OBJECT_ID_RULE)
-      .message(OBJECT_ID_RULE_MESSAGE)
-      .required(),
-    prevCardOrderIds: Joi.array()
+    id: Joi.string()
       .required()
-      .items(
-        Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
-      ),
-
-    nextColumnId: Joi.string()
       .pattern(OBJECT_ID_RULE)
-      .message(OBJECT_ID_RULE_MESSAGE)
-      .required(),
-    nextCardOrderIds: Joi.array()
-      .required()
-      .items(
-        Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
-      ),
+      .message(OBJECT_ID_RULE_MESSAGE),
   });
 
   try {
-    await correctCondition.validateAsync(req.body, {
-      abortEarly: false,
-    });
+    await correctCondition.validateAsync(req.params);
 
     next();
   } catch (error) {
@@ -94,8 +73,8 @@ const moveCardToDifferentColumn = async (req, res, next) => {
   }
 };
 
-export const boardValidation = {
+export const columnValidation = {
   createNew,
   update,
-  moveCardToDifferentColumn,
+  deleteColumn,
 };
