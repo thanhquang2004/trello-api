@@ -12,10 +12,11 @@ Router.route("/")
 
 Router.route("/:id")
   .get(boardController.getDetail)
-  .put((req, res) => {
-    res.send("PUT /board/:id");
-  })
+  .put(boardValidation.update, boardController.update)
   .delete((req, res) => {
     res.send("DELETE /board/:id");
   });
+
+Router.route("/supports/moveCard").put(boardValidation.moveCardToDifferentColumn, boardController.moveCardToDifferentColumn);
+
 export const boardRoutes = Router;
